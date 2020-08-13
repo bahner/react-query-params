@@ -19,7 +19,7 @@ To be as seamless as possible ReactQueryParams is used as a base class were you 
 Ex. App.jsx:
 
 	import ReactQueryParams from 'react-query-params';
-
+	
 	export default class MyApp extends ReactQueryParams {
 	  /* Your code */
 	}
@@ -49,7 +49,7 @@ If a value is in a query param do not put it in state. The query param should ow
 Semantically similar to React defaultProps.
 
 	import ReactQueryParams from 'react-query-params';
-
+	
 	export default class MyApp extends ReactQueryParams {
 	    defaultQueryParams = {
 	        game: 'go'
@@ -91,16 +91,5 @@ Method getQueryParam() reads one param value at a time but you can specify an al
 		const myParamVal = this.getQueryParam('myparam', nextProps);
 	}
 
-
-
-
-## Support
-Jeff Butsch
-
-Software Engineer at Netflix
-
-Email [jbutsch@netflix.com](mailto:jbutsch@netflix.com?subject=I%20love%20react-query-params)
-
-twitter [@jeff3dx](https://twitter.com/jeff3dx)
-
-License: MIT
+## License
+License: [GPL-3](https://www.gnu.org/licenses/gpl-3.0.html)
