@@ -28,9 +28,9 @@ const isObject = (value) => value != null && (typeof value === 'object' || typeo
  * Support: https://github.com/jeff3dx/react-query-params
  */
 export default class ReactQueryParams extends Component {
-  constructor(router) {
+  constructor() {
     super();
-    this.history = this.context?.router || createBrowserHistory();
+    this.history = createBrowserHistory();
     this._queryParamsCache = null;
   }
 
