@@ -1,0 +1,68 @@
+{
+  "name": "@bahner/react-query-params",
+  "version": "1.0.11",
+  "description": "Easy to use query param support for React",
+  "main": "dist/react-query-params.js",
+  "scripts": {
+    "build-component": "babel src --out-dir dist --plugins=transform-object-rest-spread --presets=env,react",
+    "build": "npm run build-component",
+    "lint": "eslint src",
+    "dev": "webpack-dev-server"
+  },
+  "keywords": [
+    "component",
+    "parameters",
+    "params",
+    "query string",
+    "query",
+    "query-params",
+    "react",
+    "react-query-params",
+    "react-router",
+    "router",
+    "search string",
+    "url"
+  ],
+  "author": "Lars Bahner <lars.bahner@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/bahner/react-query-params.git"
+  },
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "@babel/core": "^7.11.1",
+    "babel-cli": "^6.26.0",
+    "babel-loader": "^8.1.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "^6.24.1",
+    "babel-register": "^6.26.0",
+    "braces": "^3.0.2",
+    "copy-webpack-plugin": "^6.0.3",
+    "core-js": "^3.6.5",
+    "css-loader": "^4.2.1",
+    "eslint": "^7.6.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-config-standard-react": "^9.2.0",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-react": "^7.20.6",
+    "eslint-plugin-standard": "^4.0.1",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "style-loader": "^1.2.1",
+    "webpack": "^4.44.1",
+    "webpack-dev-server": "^3.11.0"
+  },
+  "dependencies": {
+    "history": "^5.0.0"
+  },
+  "peerDependencies": {
+    "react": "16.x"
+  },
+  "bugs": {
+    "url": "https://github.com/bahner/react-query-params/issues"
+  },
+  "homepage": "https://github.com/bahner/react-query-params#readme"
+}
