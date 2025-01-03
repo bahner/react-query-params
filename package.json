@@ -1,13 +1,19 @@
 {
   "name": "@bahner/react-query-params",
-  "version": "1.0.11",
+  "version": "1.0.12~pre",
   "description": "Easy to use query param support for React",
-  "main": "dist/react-query-params.js",
+  "main": "src/react-query-params.js",
+  "module": "src/react-query-params.esm.js",
+  "files": [
+    "AUTHORS",
+    "COPYING",
+    "README.md",
+    "dist/"
+  ],
   "scripts": {
-    "build-component": "babel src --out-dir dist --plugins=transform-object-rest-spread --presets=env,react",
-    "build": "npm run build-component",
-    "lint": "eslint src",
-    "dev": "webpack-dev-server"
+    "build": "bun build src/react-query-params.js --outdir dist --format esm --verbose --external react --external react-dom --external history",
+    "lint": "bun eslint src",
+    "test": "bun test"
   },
   "keywords": [
     "component",
@@ -24,45 +30,17 @@
     "url"
   ],
   "author": "Lars Bahner <lars.bahner@gmail.com>",
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/bahner/react-query-params.git"
-  },
   "license": "GPL-3.0",
   "devDependencies": {
-    "@babel/core": "^7.26.0",
-    "babel-cli": "^6.26.0",
-    "babel-loader": "^8.4.1",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-preset-env": "^1.7.0",
-    "babel-preset-react": "^6.24.1",
-    "babel-register": "^6.26.0",
-    "braces": "^3.0.3",
-    "copy-webpack-plugin": "^6.4.1",
-    "core-js": "^3.39.0",
-    "css-loader": "^4.3.0",
     "eslint": "^7.32.0",
-    "eslint-config-standard": "^14.1.1",
-    "eslint-config-standard-react": "^9.2.0",
-    "eslint-plugin-import": "^2.31.0",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^4.3.1",
     "eslint-plugin-react": "^7.37.3",
-    "eslint-plugin-standard": "^4.1.0",
     "react": "^16.14.0",
-    "react-dom": "^16.14.0",
-    "style-loader": "^1.3.0",
-    "webpack": "^4.47.0",
-    "webpack-dev-server": "^3.11.3"
+    "react-dom": "^16.14.0"
   },
   "dependencies": {
     "history": "^5.3.0"
   },
   "peerDependencies": {
     "react": "16.x"
-  },
-  "bugs": {
-    "url": "https://github.com/bahner/react-query-params/issues"
-  },
-  "homepage": "https://github.com/bahner/react-query-params#readme"
+  }
 }
