@@ -1,6 +1,6 @@
 {
   "name": "@bahner/react-query-params",
-  "version": "1.0.12~pre",
+  "version": "1.0.12",
   "description": "Easy to use query param support for React",
   "main": "src/react-query-params.js",
   "module": "src/react-query-params.esm.js",
