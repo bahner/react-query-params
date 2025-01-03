@@ -1,4 +1,3 @@
-
 /*
   Copyright (c) 2017 Jeff Butsch
   Copyright © 2020 Lars Bahner <lars.bahner@gmail.com>
@@ -17,64 +16,29 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { Component } from 'react'
-import { createBrowserHistory } from 'history'
+import { Component } from 'react';
+import { createBrowserHistory } from 'history';
 
-function isUndefined (value) {
-  return value === undefined
-}
+const isNil = (value) => value == null;
 
-function isNil (value) {
-  // eslint-disable-next-line
-  return value == null;
-}
-
-function isObject (value) {
-  const type = typeof value
-  // eslint-disable-next-line
-  return value != null && (type == "object" || type == "function");
-}
-
-function startsWith (value, searchString, position) {
-  position = position || 0
-  return value.substr(position, searchString.length) === searchString
-}
-
-function endsWith (value, searchString, position) {
-  const subjectString = value.toString()
-  if (
-    typeof position !== 'number' ||
-    !isFinite(position) ||
-    Math.floor(position) !== position ||
-    position > subjectString.length
-  ) {
-    position = subjectString.length
-  }
-  position -= searchString.length
-  const lastIndex = subjectString.lastIndexOf(searchString, position)
-  return lastIndex !== -1 && lastIndex === position
-}
+const isObject = (value) => value != null && (typeof value === 'object' || typeof value === 'function');
 
 /**
  * React Query Params Component base class
  * Support: https://github.com/jeff3dx/react-query-params
  */
 export default class ReactQueryParams extends Component {
-  constructor (router) {
-    super()
-    if (this.context && this.context.router) {
-      this.history = this.context.router
-    } else {
-      this.history = createBrowserHistory()
-    }
+  constructor(router) {
+    super();
+    this.history = this.context?.router || createBrowserHistory();
+    this._queryParamsCache = null;
   }
 
   /* Clear the query param cache */
-  UNSAFE_componentWillUpdate () { // eslint-disable-line camelcase
-    this._queryParamsCache = null
-
-    if (super.componentWillUpdate) {
-      super.componentWillUpdate()
+  componentDidUpdate(prevProps, prevState) {
+    this._queryParamsCache = null;
+    if (super.componentDidUpdate) {
+      super.componentDidUpdate(prevProps, prevState);
     }
   }
 
@@ -83,94 +47,63 @@ export default class ReactQueryParams extends Component {
    * Any query param set to "true" or "false" will be converted to a boolean type.
    * @param {string} value - the query param string value
    */
-  _boolify (value) {
+  _boolify(value) {
     if (typeof value === 'string') {
-      const value2 = value.toLowerCase().trim()
-      if (value2 === 'true') {
-        return true
-      } else if (value2 === 'false') {
-        return false
-      }
+      const lowerValue = value.toLowerCase().trim();
+      if (lowerValue === 'true') return true;
+      if (lowerValue === 'false') return false;
     }
-    return value
+    return value;
   }
 
   /**
-   * If query param string is object-like try to parse it
+   * If query param string is object-like, try to parse it
    */
-  _queryParamToObject (value) {
-    let result = value
-    if (
-      typeof value === 'string' &&
-      ((startsWith(value, '[') && endsWith(value, ']')) ||
-        (startsWith(value, '{') && endsWith(value, '}')))
-    ) {
+  _queryParamToObject(value) {
+    if (typeof value === 'string' && (/^\[.*\]$/.test(value) || /^\{.*\}$/.test(value))) {
       try {
-        result = JSON.parse(decodeURIComponent(value))
-      } catch (ex) {
-        console.error(ex)
-        // Can't parse so fall back to verbatim value
-        result = value
+        return JSON.parse(decodeURIComponent(value));
+      } catch (error) {
+        console.error('Failed to parse JSON:', error);
       }
     }
-    return result
+    return value;
   }
 
-  // This appears to be a stray cat.
-  // _queryParamsCache;
-
-  _resolveSearchParams (source = window) {
-    let searchParams = {}
-
-    if (source.location.query) {
-      searchParams = source.location.query
-    } else if (source.location.search) {
-      const queryString = (source.location.search || '').replace('?', '')
-
-      searchParams = queryString.split('&')
-        .filter(pair => !!pair && ~pair.indexOf('='))
-        .map(pair => pair.split('='))
-        .reduce((aggregated, current = []) => {
-          aggregated[current[0]] = current[1]
-          return aggregated
-        }, searchParams)
-    }
-    return searchParams
+  _resolveSearchParams(source = window) {
+    const searchParams = new URLSearchParams(source.location.search || '');
+    return Object.fromEntries(searchParams.entries());
   }
 
   /**
    * Returns a map of all query params including default values. Params that match
    * the default value do not show up in the URL but are still available here.
    */
-  get queryParams () {
+  get queryParams() {
     if (isNil(this._queryParamsCache)) {
-      const searchParams = this._resolveSearchParams()
+      const searchParams = this._resolveSearchParams();
+      const defaults = this.defaultQueryParams || {};
+      const allParams = { ...defaults, ...searchParams };
 
-      const defaults = this.defaultQueryParams || {}
-      const all = { ...defaults, ...searchParams }
-      Object.keys(all).forEach(key => {
-        all[key] = this._boolify(all[key])
-        all[key] = this._queryParamToObject(all[key])
-      })
-      this._queryParamsCache = all
+      Object.keys(allParams).forEach((key) => {
+        allParams[key] = this._boolify(this._queryParamToObject(allParams[key]));
+      });
+
+      this._queryParamsCache = allParams;
     }
-    return this._queryParamsCache
+    return this._queryParamsCache;
   }
 
   /**
    * Get one query param value.
    * @param {string} key - The query param key
-   * @param {object} props - Optional. An alternate props object to use instead of the current props
+   * @param {object} source - Optional. An alternate source object to use instead of the current window object
    */
-  getQueryParam (key, source = window) {
-    const defaults = this.defaultQueryParams || {}
-    const searchParams = this._resolveSearchParams(source)
-    let result = isUndefined(searchParams[key])
-      ? searchParams[key]
-      : defaults[key]
-    result = this._boolify(result)
-    result = this._queryParamToObject(result)
-    return result
+  getQueryParam(key, source = window) {
+    const defaults = this.defaultQueryParams || {};
+    const searchParams = this._resolveSearchParams(source);
+    let result = searchParams[key] ?? defaults[key];
+    return this._boolify(this._queryParamToObject(result));
   }
 
   /**
@@ -178,46 +111,38 @@ export default class ReactQueryParams extends Component {
    * @param {object} params - Object of key:values to overlay on current query param values.
    * @param {boolean} addHistory - true = add browser history, default false.
    */
-  setQueryParams (params, addHistory = false) {
-    const searchParams = this._resolveSearchParams()
+  setQueryParams(params, addHistory = false) {
+    const searchParams = this._resolveSearchParams();
+    const nextQueryParams = { ...searchParams, ...params };
+    const defaults = this.defaultQueryParams || {};
 
-    const nextQueryParams = { ...searchParams, ...params }
-    const defaults = this.defaultQueryParams || {}
-
-    Object.keys(nextQueryParams).forEach(key => {
-      // If it's an object value (object, array, etc.) convert it to a string
+    Object.keys(nextQueryParams).forEach((key) => {
       if (isObject(nextQueryParams[key])) {
         try {
-          nextQueryParams[key] = JSON.stringify(nextQueryParams[key])
-        } catch (ex) {
-          console.log(
-            'react-query-params -- Failed to serialize queryParam ' + key,
-            ex
-          )
-          nextQueryParams[key] = ''
+          nextQueryParams[key] = JSON.stringify(nextQueryParams[key]);
+        } catch (error) {
+          console.error(`Failed to serialize queryParam ${key}:`, error);
+          nextQueryParams[key] = '';
         }
       }
-      // Remove params that match the default
       if (nextQueryParams[key] === defaults[key]) {
-        delete nextQueryParams[key]
+        delete nextQueryParams[key];
       }
-    })
+    });
 
     const search =
       '?' +
-      Object.keys(nextQueryParams)
-        .map(key => `${key}=${nextQueryParams[key]}`)
-        .join('&')
+      Object.entries(nextQueryParams)
+        .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+        .join('&');
 
     if (addHistory) {
-      this.history.push({ pathname: window.location.pathname, search })
+      this.history.push({ pathname: window.location.pathname, search });
     } else {
-      this.history.replace({ pathname: window.location.pathname, search })
+      this.history.replace({ pathname: window.location.pathname, search });
     }
 
-    // Clear the cache
-    this._queryParamsCache = null
-
-    this.forceUpdate()
+    this._queryParamsCache = null;
+    this.forceUpdate();
   }
 }
